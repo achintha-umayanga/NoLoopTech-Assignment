@@ -46,7 +46,7 @@ export function TaskDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Task?</AlertDialogTitle>
           <AlertDialogDescription>
             This will permanently delete the task{" "}
             <span className="font-semibold text-foreground">"{task.title}"</span>.

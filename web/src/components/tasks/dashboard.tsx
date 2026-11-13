@@ -101,50 +101,52 @@ interface TaskTableProps {
 function TaskTable({ tasks, isLoading, onEdit, onDelete }: TaskTableProps) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[30%]">Title & Description</TableHead>
-              <TableHead className="w-[18%]">Status</TableHead>
-              <TableHead className="w-[20%]">Due Date</TableHead>
-              <TableHead className="w-[18%]">Created</TableHead>
-              <TableHead className="w-[14%] text-right">Actions</TableHead>
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-muted/40">
+            <TableHead className="w-[32%] pl-6 font-semibold">
+              Title & Description
+            </TableHead>
+            <TableHead className="w-[18%] font-semibold">Status</TableHead>
+            <TableHead className="w-[20%] font-semibold">Due Date</TableHead>
+            <TableHead className="w-[16%] font-semibold">Created</TableHead>
+            <TableHead className="w-[14%] pr-6 text-right font-semibold">
+              Actions
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(4)].map((_, i) => (
+            <TableRow key={i}>
+              <TableCell className="pl-6">
+                <Skeleton className="h-5 w-48 mb-2" />
+                <Skeleton className="h-3 w-64" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-6 w-24 rounded-full" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-28" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              <TableCell className="pr-6 text-right">
+                <div className="flex justify-end gap-2">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[...Array(4)].map((_, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <Skeleton className="h-5 w-48 mb-2" />
-                  <Skeleton className="h-3 w-64" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-6 w-24 rounded-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-28" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-24" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
     );
   }
 
   if (tasks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center bg-card/50">
+      <div className="mx-6 mb-6 flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center bg-card/50">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
           <Inbox className="h-6 w-6 text-muted-foreground" />
         </div>
@@ -157,109 +159,107 @@ function TaskTable({ tasks, isLoading, onEdit, onDelete }: TaskTableProps) {
   }
 
   return (
-    <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/40">
-            <TableHead className="w-[32%] font-semibold">
-              Title & Description
-            </TableHead>
-            <TableHead className="w-[18%] font-semibold">Status</TableHead>
-            <TableHead className="w-[20%] font-semibold">Due Date</TableHead>
-            <TableHead className="w-[16%] font-semibold">Created</TableHead>
-            <TableHead className="w-[14%] text-right font-semibold">
-              Actions
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task) => {
-            const overdue = isOverdue(task.dueDate) && task.status !== "DONE";
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-muted/40">
+          <TableHead className="w-[32%] pl-6 font-semibold">
+            Title & Description
+          </TableHead>
+          <TableHead className="w-[18%] font-semibold">Status</TableHead>
+          <TableHead className="w-[20%] font-semibold">Due Date</TableHead>
+          <TableHead className="w-[16%] font-semibold">Created</TableHead>
+          <TableHead className="w-[14%] pr-6 text-right font-semibold">
+            Actions
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {tasks.map((task) => {
+          const overdue = isOverdue(task.dueDate) && task.status !== "DONE";
 
-            return (
-              <TableRow
-                key={task.id}
-                className="transition-colors hover:bg-muted/50"
-              >
-                <TableCell>
-                  <div className="space-y-1">
-                    <p className="font-medium text-foreground leading-snug">
-                      {task.title}
+          return (
+            <TableRow
+              key={task.id}
+              className="transition-colors hover:bg-muted/50"
+            >
+              <TableCell className="pl-6">
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground leading-snug">
+                    {task.title}
+                  </p>
+                  {task.description && (
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {task.description}
                     </p>
-                    {task.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {task.description}
-                      </p>
+                  )}
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <TaskStatusBadge status={task.status} />
+              </TableCell>
+
+              <TableCell>
+                {task.dueDate ? (
+                  <div
+                    className={`inline-flex items-center gap-1.5 text-xs font-medium ${
+                      overdue
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {overdue ? (
+                      <AlertCircle className="h-3.5 w-3.5" />
+                    ) : (
+                      <Calendar className="h-3.5 w-3.5" />
+                    )}
+                    <span>{formatDate(task.dueDate)}</span>
+                    {overdue && (
+                      <span className="text-[10px] font-semibold uppercase tracking-wider px-1 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300">
+                        Overdue
+                      </span>
                     )}
                   </div>
-                </TableCell>
+                ) : (
+                  <span className="text-xs text-muted-foreground/60">—</span>
+                )}
+              </TableCell>
 
-                <TableCell>
-                  <TaskStatusBadge status={task.status} />
-                </TableCell>
+              <TableCell>
+                <span className="text-xs text-muted-foreground">
+                  {formatDate(task.createdAt)}
+                </span>
+              </TableCell>
 
-                <TableCell>
-                  {task.dueDate ? (
-                    <div
-                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                        overdue
-                          ? "text-red-600 dark:text-red-400"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {overdue ? (
-                        <AlertCircle className="h-3.5 w-3.5" />
-                      ) : (
-                        <Calendar className="h-3.5 w-3.5" />
-                      )}
-                      <span>{formatDate(task.dueDate)}</span>
-                      {overdue && (
-                        <span className="text-[10px] font-semibold uppercase tracking-wider px-1 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300">
-                          Overdue
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-xs text-muted-foreground/60">—</span>
-                  )}
-                </TableCell>
-
-                <TableCell>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(task.createdAt)}
-                  </span>
-                </TableCell>
-
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(task)}
-                      title="Edit Task"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDelete(task)}
-                      title="Delete Task"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+              <TableCell className="pr-6 text-right">
+                <div className="flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(task)}
+                    title="Edit Task"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(task)}
+                    title="Delete Task"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }
 
@@ -494,7 +494,7 @@ function TaskToolbar({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 py-4">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-6 py-4">
       <div className="flex flex-wrap items-center gap-2.5">
         <div className="flex items-center gap-1.5 w-full sm:w-auto">
           <Filter className="h-4 w-4 text-muted-foreground hidden sm:inline" />
@@ -677,7 +677,7 @@ export function TaskDashboard() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border bg-card p-6 shadow-sm">
+      <div className="rounded-xl border bg-card pt-1 shadow-sm overflow-clip">
         <TaskToolbar
           filters={filters}
           onFilterChange={setFilters}
@@ -685,7 +685,7 @@ export function TaskDashboard() {
         />
 
         {isError && (
-          <div className="my-4 flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
+          <div className="mx-6 my-4 flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
             <div className="flex items-center gap-2 text-sm font-medium">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               <span>
