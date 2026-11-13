@@ -2,7 +2,7 @@
 
 import { ApiProvider } from "@reduxjs/toolkit/query/react";
 import { tasksApi } from "@/api/tasksApi";
-import { TaskDashboard } from "@/components/tasks/task-dashboard";
+import { TaskDashboard } from "@/components/tasks/dashboard";
 import { CheckSquare } from "lucide-react";
 
 export default function Home() {
