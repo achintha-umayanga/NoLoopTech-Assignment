@@ -21,6 +21,12 @@ export class TasksService {
         return task;
     }
 
+    async findAll() {
+        return this.prisma.task.findMany({
+            orderBy: { createdAt: 'asc'},
+        })
+    }
+
     //create
     async create(DTO: CreateTaskDto) {
         return this.prisma.task.create({
