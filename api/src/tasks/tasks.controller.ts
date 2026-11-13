@@ -11,8 +11,16 @@ export class TasksController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    findAllTasks() {
+    getAllTasks() {
         return this.tasksService.findAll();
+    }
+
+    @Get(':id')
+    @HttpCode(HttpStatus.OK)
+    getTask(
+        @Param('id') id: string,
+    ) {
+        return this.tasksService.findOne(id);
     }
     
     @Post()
