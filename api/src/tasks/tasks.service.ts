@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/createTask';
 import { UpdateTaskDto } from './dto/updateTask';
+import { FilterTasksDto } from './dto/filterTasks';
 
 @Injectable()
 export class TasksService {
@@ -21,10 +22,26 @@ export class TasksService {
         return task;
     }
 
-    async findAll() {
+    async findAll(filter: FilterTasksDto) {
+        const { status, sortBy, sortOrder = 'asc' } = filter;
+
+        const where: any = {};
+        if (status) {
+            where.status = status;
+        }
+
+        let orderBy: any = { createdAt: 'desc' };
+        
+        if (sortBy === 'dueDate') {
+            orderBy = { dueDate: sortOrder };
+        } else if (sortBy === 'createdAt') {
+            orderBy = { createdAt: sortOrder };
+        }
+
         return this.prisma.task.findMany({
-            orderBy: { createdAt: 'asc'},
-        })
+            where,
+            orderBy,
+        });
     }
 
     //create
