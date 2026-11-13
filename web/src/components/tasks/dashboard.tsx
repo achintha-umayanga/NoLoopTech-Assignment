@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   Task,
   TaskStatus,
+  TaskFilters,
   CreateTaskInput,
   UpdateTaskInput,
 } from "@/types/task";
@@ -58,6 +59,8 @@ import {
   AlertCircle,
   Inbox,
   Loader2,
+  Filter,
+  ArrowUpDown,
 } from "lucide-react";
 
 function TaskStatusBadge({ status }: { status: TaskStatus }) {
@@ -442,7 +445,102 @@ function TaskDialog({
   );
 }
 
+interface TaskToolbarProps {
+  filters: TaskFilters;
+  onFilterChange: (filters: TaskFilters) => void;
+  onOpenCreate: () => void;
+}
+
+function TaskToolbar({
+  filters,
+  onFilterChange,
+  onOpenCreate,
+}: TaskToolbarProps) {
+  const currentStatus = filters.status || "ALL";
+  const currentSort =
+    filters.sortBy === "dueDate"
+      ? filters.sortOrder === "asc"
+        ? "due-asc"
+        : "due-desc"
+      : "default";
+
+  const handleStatusChange = (val: string) => {
+    onFilterChange({
+      ...filters,
+      status: val as TaskStatus | "ALL",
+    });
+  };
+
+  const handleSortChange = (val: string) => {
+    if (val === "due-asc") {
+      onFilterChange({
+        ...filters,
+        sortBy: "dueDate",
+        sortOrder: "asc",
+      });
+    } else if (val === "due-desc") {
+      onFilterChange({
+        ...filters,
+        sortBy: "dueDate",
+        sortOrder: "desc",
+      });
+    } else {
+      onFilterChange({
+        ...filters,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+    }
+  };
+
+  return (
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 py-4">
+      <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+          <Filter className="h-4 w-4 text-muted-foreground hidden sm:inline" />
+          <Select value={currentStatus} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-full sm:w-[160px] h-9">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Statuses</SelectItem>
+              <SelectItem value="TODO">To Do</SelectItem>
+              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+              <SelectItem value="DONE">Done</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+          <ArrowUpDown className="h-4 w-4 text-muted-foreground hidden sm:inline" />
+          <Select value={currentSort} onValueChange={handleSortChange}>
+            <SelectTrigger className="w-full sm:w-[190px] h-9">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Sort by: Default (Newest)</SelectItem>
+              <SelectItem value="due-asc">Due Date: Earliest First</SelectItem>
+              <SelectItem value="due-desc">Due Date: Latest First</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <Button onClick={onOpenCreate} className="gap-1.5 self-end sm:self-auto shadow-sm">
+        New Task
+      </Button>
+    </div>
+  );
+}
+
 export function TaskDashboard() {
+  // Filters and sorting
+  const [filters, setFilters] = useState<TaskFilters>({
+    status: "ALL",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
   // RTK Query hooks
   const {
     data: tasks = [],
@@ -451,7 +549,7 @@ export function TaskDashboard() {
     isError,
     error: queryError,
     refetch,
-  } = useGetTasksQuery();
+  } = useGetTasksQuery(filters);
 
   const [createTask] = useCreateTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
@@ -580,12 +678,11 @@ export function TaskDashboard() {
 
       {/* Main card */}
       <div className="rounded-xl border bg-card p-6 shadow-sm">
-        <div className="flex items-center justify-between py-4">
-          <h2 className="text-lg font-semibold text-foreground">Tasks</h2>
-          <Button onClick={openCreateDialog} className="gap-1.5 shadow-sm">
-            New Task
-          </Button>
-        </div>
+        <TaskToolbar
+          filters={filters}
+          onFilterChange={setFilters}
+          onOpenCreate={openCreateDialog}
+        />
 
         {isError && (
           <div className="my-4 flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
