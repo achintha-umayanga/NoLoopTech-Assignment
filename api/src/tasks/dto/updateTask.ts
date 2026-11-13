@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { TaskStatus } from './createTask';
 
-export class CreateTaskDto {
+export class UpdateTaskDto {
     @IsOptional()
     @IsString({ message: 'Title must be a string'})
     @IsNotEmpty({ message: 'Title is required'})
