@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Task, CreateTaskInput, UpdateTaskInput } from "@/types/task";
+import { Task, CreateTaskInput, UpdateTaskInput, TaskFilters } from "@/types/task";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -11,10 +11,26 @@ export const tasksApi = createApi({
   tagTypes: ["Task"],
   
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], void>({
-      query: () => "/tasks",
+    getTasks: builder.query<Task[], TaskFilters | void>({
+      query: (filters) => {
+        const params: Record<string, string> = {};
+        if (filters?.status && filters.status !== "ALL") {
+          params.status = filters.status;
+        }
+        if (filters?.sortBy) {
+          params.sortBy = filters.sortBy;
+        }
+        if (filters?.sortOrder) {
+          params.sortOrder = filters.sortOrder;
+        }
+        return {
+          url: "/tasks",
+          params,
+        };
+      },
       providesTags: ["Task"],
     }),
+
 
     getTaskById: builder.query<Task, string>({
       query: (id) => `/tasks/${id}`,

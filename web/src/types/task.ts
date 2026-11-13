@@ -23,3 +23,10 @@ export interface UpdateTaskInput {
   status?: TaskStatus;
   dueDate?: string;
 }
+
+export interface TaskFilters {
+  status?: TaskStatus | 'ALL';
+  sortBy?: 'dueDate' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
